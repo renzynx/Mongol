@@ -1,0 +1,25 @@
+{
+  "name": "dev",
+  "version": "1.0.0",
+  "description": "Dev bot",
+  "main": "./src/bot.js",
+  "author": "Tomc",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon ./src/bot.js"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "common-tags": "^1.8.0",
+    "discord.js": "^12.5.1",
+    "erela.js": "^2.3.0",
+    "erela.js-spotify": "^1.2.0",
+    "glob": "^7.1.6",
+    "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2"
+  }
+}
