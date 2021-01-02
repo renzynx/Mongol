@@ -9,11 +9,12 @@
     "dev": "nodemon ./src/bot.js"
   },
   "devDependencies": {
-    "eslint": "^7.15.0",
+    "eslint": "^7.17.0",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1"
   },
   "dependencies": {
+    "@aero/eslint-config": "git+https://git.farfrom.earth/aero/forks/eslint-config-aero.git",
     "common-tags": "^1.8.0",
     "discord.js": "^12.5.1",
     "erela.js": "^2.3.0",

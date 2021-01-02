@@ -7,13 +7,13 @@ require('moment-duration-format')
 class client extends Client {
   constructor(config) {
     super({
-      
+
       disableMentions: 'everyone',
     });
 
-    this.token = config.token;
+    this.token = config.token || process.env.token;
 
-    this.prefix = config.prefix;
+    this.prefix = config.prefix || process.env.prefix;
 
     this.owners = config.owners;
 
@@ -26,46 +26,46 @@ class client extends Client {
     this.manager = new Manager({
       nodes: [
         {
-          host: config.host, 
+          host: config.host,
           port: config.port,
           password: config.password,
         },
       ],
-       plugins: [
-        new Spotify({
-        clientID: config.clientID,
-        clientSecret: config.clientSecret,
-        playlistLimit: config.playlistLimit,
-        albumLimit: config.albumLimit
-      })
-    ],
-    send: (id, payload) => {
-      const guild = this.guilds.cache.get(id);
-      if (guild) guild.shard.send(payload);
-    }
+      // plugins: [
+      //   new Spotify({
+      //     clientID: config.clientID,
+      //     clientSecret: config.clientSecret,
+      //     playlistLimit: config.playlistLimit,
+      //     albumLimit: config.albumLimit
+      //   })
+      // ],
+      send: (id, payload) => {
+        const guild = this.guilds.cache.get(id);
+        if (guild) guild.shard.send(payload);
+      }
     })
-    .on("nodeConnect", node => {
-      console.log(`Node "${node.options.identifier}" connected.`)
-  })
-  
-    .on("nodeError", (node, error) => {
-      console.log(`Node "${node.options.identifier}" encountered an error: ${error.message}.`)
-  })
-    .on("trackStart", (player, track) => {
-    const formattedTime = moment.duration(track.duration, 'milliseconds').format("mm:ss")
-    const embed = new MessageEmbed()
-    .setColor("#2F3136")
-    .addField(`Now playing :musical_note:`, `\`${track.title}\` [[${formattedTime}](${track.uri})]`)
-    .setFooter(`Requested by: ${track.requester.tag}`, `${track.requester.displayAvatarURL({ dynamic: true })}`)
-    const channel = this.channels.cache.get(player.textChannel);
-    channel.send(embed);
-  })
-    .on("queueEnd", player => {
-    const channel = this.channels.cache.get(player.textChannel);
-    channel.send("Queue has ended.");
-    player.destroy();
-  });
-}
+      .on("nodeConnect", node => {
+        console.log(`Node "${node.options.identifier}" connected.`)
+      })
+
+      .on("nodeError", (node, error) => {
+        console.log(`Node "${node.options.identifier}" encountered an error: ${error.message}.`)
+      })
+      .on("trackStart", (player, track) => {
+        const formattedTime = moment.duration(track.duration, 'milliseconds').format("mm:ss")
+        const embed = new MessageEmbed()
+          .setColor("#2F3136")
+          .addField(`Now playing :musical_note:`, `\`${track.title}\` [[${formattedTime}](${track.uri})]`)
+          .setFooter(`Requested by: ${track.requester.tag}`, `${track.requester.displayAvatarURL({ dynamic: true })}`)
+        const channel = this.channels.cache.get(player.textChannel);
+        channel.send(embed);
+      })
+      .on("queueEnd", player => {
+        const channel = this.channels.cache.get(player.textChannel);
+        channel.send("Queue has ended.");
+        player.destroy();
+      });
+  }
 
   start() {
     super.login(this.token);
