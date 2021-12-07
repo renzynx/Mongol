@@ -12,17 +12,17 @@ class PingCommand extends Command {
   }
 
   async exec(message) {
-    const msg = await message.channel.send('Pinging...')
+    const msg = await message.channel.send('Pinging...');
 
-    const msgP = Date.now() - msg.createdTimestamp;
+    const latency = msg.createdTimestamp - message.createdTimestamp;
 
     const m = new MessageEmbed()
-    .setTitle(':ping_pong: Pong')
-    .addField('Websocket', `\`${this.client.ws.ping}ms\``, true)
-    .addField('Message delay', `\`${msgP}ms\``, true)
-    .setColor('RANDOM')
-    .setTimestamp()
-    return message.channel.send(m)
+      .setTitle(':ping_pong: Pong')
+      .addField('Bot Latency:', `\`${latency}ms\``, true)
+      .addField('API Latency', `\`${this.client.ws.ping}ms\``, true)
+      .setColor('RANDOM')
+      .setTimestamp();
+    return message.channel.send(m);
   }
 }
 

@@ -1,6 +1,6 @@
 const Event = require('../struct/Event.js');
 const { Collection } = require('discord.js');
-const eb = require('../utils/base');
+const sendEmbed = require('../utils/base');
 class MessageEvent extends Event {
   constructor() {
     super({
@@ -11,52 +11,90 @@ class MessageEvent extends Event {
 
   exec(message) {
     if (message.bot || !message.content.startsWith(this.client.prefix)) return;
-    const args = message.content.slice(this.client.prefix.length).trim().split(/ +/);
+    const args = message.content
+      .slice(this.client.prefix.length)
+      .trim()
+      .split(/ +/);
     const commandName = args.shift();
-    const command = this.client.commands.get(commandName)
-      || this.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    const command =
+      this.client.commands.get(commandName) ||
+      this.client.commands.find(
+        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+      );
     if (command) {
       if (command.guildOnly && !message.guild) {
         return message.channel.send('This command can only be used in guilds.');
-      }
-      else if (command.ownerOnly && !this.client.owners.includes(message.author.id)) {
-        return message.channel.send('This command can only be used by the owner of this bot.');
-      }
-      else if (command.requiredArgs && args.length < command.requiredArgs) {
-        return message.channel.send(`That is not a valid usage of this command check out \`${this.client.prefix}help ${command.id}\` for more info!`);
-      }
-      else if (command.inVoiceChannel && !message.member.voice.channel) {
-        return eb('You need to be in a voice channel to use this command!','#f5145b', message.channel)
-      }
-      else if (command.sameVoiceChannel && message.member.voice.channel.id !== message.guild.me.voice.channelID) {
-        return eb('You are not in the same voice channel as mine.', '#f5145b', message.channel)
-      }
-      else if (command.isPlaying && !this.client.manager.get(message.guild.id)) {
-        return eb('There is no music playing.', '#f5145b', message.channel)
+      } else if (
+        command.ownerOnly &&
+        !this.client.owners.includes(message.author.id)
+      ) {
+        return message.channel.send(
+          'This command can only be used by the owner of this bot.'
+        );
+      } else if (command.requiredArgs && args.length < command.requiredArgs) {
+        return message.channel.send(
+          `That is not a valid usage of this command check out \`${this.client.prefix}help ${command.id}\` for more info!`
+        );
+      } else if (command.inVoiceChannel && !message.member.voice.channel) {
+        return sendEmbed(
+          'You need to be in a voice channel to use this command!',
+          '#f5145b',
+          message.channel
+        );
+      } else if (
+        command.sameVoiceChannel &&
+        message.member.voice.channel.id !== message.guild.me.voice.channelID
+      ) {
+        return sendEmbed(
+          'You are not in the same voice channel as mine.',
+          '#f5145b',
+          message.channel
+        );
+      } else if (
+        command.isPlaying &&
+        !this.client.manager.get(message.guild.id)
+      ) {
+        return sendEmbed(
+          'There is no music playing.',
+          '#f5145b',
+          message.channel
+        );
       }
       const userPermissions = command.userPermissions;
       const clientPermissions = command.clientPermissions;
       const missingPermissions = [];
       if (userPermissions.length) {
         for (let i = 0; i < userPermissions.length; i++) {
-          const hasPermission = message.member.hasPermission(userPermissions[i]);
+          const hasPermission = message.member.hasPermission(
+            userPermissions[i]
+          );
           if (!hasPermission) {
             missingPermissions.push(userPermissions[i]);
           }
         }
         if (missingPermissions.length) {
-          return message.channel.send(`Your missing these required permissions: ${missingPermissions.join(', ')}`);
+          return message.channel.send(
+            `Your missing these required permissions: ${missingPermissions.join(
+              ', '
+            )}`
+          );
         }
       }
       if (clientPermissions.length) {
         for (let i = 0; i < clientPermissions.length; i++) {
-          const hasPermission = message.guild.me.hasPermission(clientPermissions[i]);
+          const hasPermission = message.guild.me.hasPermission(
+            clientPermissions[i]
+          );
           if (!hasPermission) {
             missingPermissions.push(clientPermissions[i]);
           }
         }
         if (missingPermissions.length) {
-          return message.channel.send(`I'm missing these required permissions: ${missingPermissions.join(', ')}`);
+          return message.channel.send(
+            `I'm missing these required permissions: ${missingPermissions.join(
+              ', '
+            )}`
+          );
         }
       }
       if (!this.client.cooldowns.has(command.name)) {
@@ -66,10 +104,13 @@ class MessageEvent extends Event {
       const timestamps = this.client.cooldowns.get(command.name);
       const cooldownAmount = command.cooldown * 1000;
       if (timestamps.has(message.author.id)) {
-        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+        const expirationTime =
+          timestamps.get(message.author.id) + cooldownAmount;
         if (now < expirationTime) {
           const timeLeft = ((expirationTime - now) / 1000).toFixed(1);
-          return message.channel.send(`Please wait ${timeLeft} more second(s) before reusing the \`${command.id}\` command.`);
+          return message.channel.send(
+            `Please wait ${timeLeft} more second(s) before reusing the \`${command.id}\` command.`
+          );
         }
       }
       timestamps.set(message.author.id, now);
@@ -77,12 +118,10 @@ class MessageEvent extends Event {
     }
     try {
       command.exec(message, args);
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
   }
 }
-
 
 module.exports = MessageEvent;
