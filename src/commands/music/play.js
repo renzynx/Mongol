@@ -40,6 +40,22 @@ class PlayCommand extends Command {
 
     if (player.state !== 'CONNECTED') await player.connect();
 
+    if (res.loadType === 'TRACK_LOADED') {
+      player.queue.add(res.tracks[0]);
+      if (!player.playing && !player.paused && !player.queue.size)
+        return player.play();
+      else {
+        const rb = new MessageEmbed()
+          .setColor(message.guild.me.displayHexColor || '#2F3136')
+          .setFooter(
+            `Requested by: ${message.author.tag}`,
+            message.author.displayAvatarURL({ dynamic: true })
+          )
+          .addField('Enqueued', `\`${res.tracks[0].title}\``);
+        return message.channel.send(rb);
+      }
+    }
+
     if (res.loadType === 'PLAYLIST_LOADED') {
       await player.queue.add(res.tracks);
       if (
@@ -73,20 +89,6 @@ class PlayCommand extends Command {
     } else if (res.loadType === 'LOAD_FAILED') {
       if (!player.queue.current) player.destroy();
       throw res.exception;
-    } else {
-      player.queue.add(res.tracks[0]);
-      if (!player.playing && !player.paused && !player.queue.size)
-        player.play();
-      else {
-        const rb = new MessageEmbed()
-          .setColor(message.guild.me.displayHexColor || '#2F3136')
-          .setFooter(
-            `Requested by: ${message.author.tag}`,
-            message.author.displayAvatarURL({ dynamic: true })
-          )
-          .addField('Enqueued', `\`${res.tracks[0].title}\``);
-        return message.channel.send(rb);
-      }
     }
   }
 }

@@ -4,6 +4,7 @@ const {
   registerCommands,
 } = require('../struct/registries/Registries.js');
 const { Manager } = require('erela.js');
+const { KSoftClient } = require('@ksoft/api');
 const Spotify = require('erela.js-spotify');
 const moment = require('moment');
 require('moment-duration-format');
@@ -13,7 +14,11 @@ class BotClient extends Client {
       disableMentions: 'everyone',
     });
 
+    this.config = config;
+
     this.token = config.token || process.env.token;
+
+    this.ksoft = new KSoftClient(config.lyric_api);
 
     this.prefix = config.prefix || process.env.prefix;
 
