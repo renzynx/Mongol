@@ -12,7 +12,7 @@ class PlayCommand extends Command {
       aliases: ['p'],
       usage: 'play <song name>',
       example: ['play never gonna give you up'],
-      cooldown: 1,
+      cooldown: 3,
       category: 'Music',
       clientPermissions: ['CONNECT', 'SPEAK'],
       inVoiceChannel: true,
@@ -36,58 +36,58 @@ class PlayCommand extends Command {
       volume: 80,
     });
 
-    switch (res.loadType) {
-      case 'LOAD_FAILED':
-        throw res.exception;
-      case 'CONNECTED':
-        await player.connect();
-        break;
-      case 'PLAYLIST_LOADED':
-        await player.queue.add(res.tracks);
-        if (
-          !player.playing &&
-          !player.paused &&
-          player.queue.totalSize === res.tracks.length
-        )
-          player.play();
+    if (res.loadType === 'LOAD_FAILED') throw res.exception;
 
-        const rn = new MessageEmbed()
+    if (player.state !== 'CONNECTED') await player.connect();
+
+    if (res.loadType === 'PLAYLIST_LOADED') {
+      await player.queue.add(res.tracks);
+      if (
+        !player.playing &&
+        !player.paused &&
+        player.queue.totalSize === res.tracks.length
+      )
+        player.play();
+
+      const rn = new MessageEmbed()
+        .setColor(message.guild.me.displayHexColor || '#2F3136')
+        .setAuthor(
+          'Playlist added to the queue',
+          message.author.displayAvatarURL({ dynamic: true })
+        )
+        .setTitle(`**🎶 ${res.playlist.name}**`)
+        .addField('Enqueued', '`' + res.tracks.length + '` songs')
+        .addField(
+          'Duration',
+          moment
+            .duration(res.playlist.duration, 'milliseconds')
+            .format('hh:mm:ss')
+        )
+        .setThumbnail(player.queue.current.thumbnail)
+        .setTimestamp();
+
+      return message.channel.send(rn);
+    } else if (res.loadType === 'NO_MATCHES') {
+      if (!player.queue.current) player.destroy();
+
+      return message.reply(`I can't find any results for ${query}.`);
+    } else if (res.loadType === 'LOAD_FAILED') {
+      if (!player.queue.current) player.destroy();
+      throw res.exception;
+    } else {
+      player.queue.add(res.tracks[0]);
+      if (!player.playing && !player.paused && !player.queue.size)
+        player.play();
+      else {
+        const rb = new MessageEmbed()
           .setColor(message.guild.me.displayHexColor || '#2F3136')
-          .setAuthor(
-            'Playlist added to the queue',
+          .setFooter(
+            `Requested by: ${message.author.tag}`,
             message.author.displayAvatarURL({ dynamic: true })
           )
-          .setTitle(`**🎶 ${res.playlist.name}**`)
-          .addField('Enqueued', '`' + res.tracks.length + '` songs')
-          .addField(
-            'Duration',
-            moment
-              .duration(res.playlist.duration, 'milliseconds')
-              .format('hh:mm:ss')
-          )
-
-          .setTimestamp();
-
-        message.channel.send(rn);
-        break;
-      case 'NO_MATCHES':
-        if (!player.queue.current) player.destroy();
-        break;
-      case 'TRACK_LOADED':
-        player.queue.add(res.tracks[0]);
-        if (!player.playing && !player.paused && !player.queue.size)
-          player.play();
-        else {
-          const rb = new MessageEmbed()
-            .setColor(message.guild.me.displayHexColor || '#2F3136')
-            .setFooter(
-              `Requested by: ${message.author.tag}`,
-              message.author.displayAvatarURL({ dynamic: true })
-            )
-            .addField('Enqueued', `\`${res.tracks[0].title}\``);
-          return message.channel.send(rb);
-        }
-        break;
+          .addField('Song added to the queue', `\`${res.tracks[0].title}\``);
+        return message.channel.send(rb);
+      }
     }
   }
 }
