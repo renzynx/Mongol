@@ -36,7 +36,7 @@ class Search extends Command {
       .join('\n\n');
 
     const embed = new MessageEmbed()
-      .setTitle(`Search results for ${query}`)
+      .setTitle(`Search results for "${query}"`)
       .setColor('RANDOM')
       .setDescription(t)
       .setFooter(
