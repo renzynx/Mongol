@@ -73,7 +73,7 @@ class PlayCommand extends Command {
       case 'NO_MATCHES':
         if (!player.queue.current) player.destroy();
         break;
-      default:
+      case 'TRACK_LOADED':
         player.queue.add(res.tracks[0]);
         if (!player.playing && !player.paused && !player.queue.size)
           player.play();
