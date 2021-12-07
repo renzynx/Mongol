@@ -15,7 +15,7 @@ module.exports = class ShuffleQueue extends Command {
       requiredArgs: false,
     });
   }
-  async exec(message, args) {
+  async exec(message) {
     const player = this.client.manager.players.get(message.guild.id);
 
     const channel = message.member.voice.channel;

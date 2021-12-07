@@ -1,4 +1,4 @@
-const Command = require('../struct/Command.js');
+const Command = require('../../struct/Command.js');
 
 const { MessageEmbed } = require('discord.js');
 
@@ -18,7 +18,7 @@ class PingCommand extends Command {
 
     const m = new MessageEmbed()
       .setTitle(':ping_pong: Pong')
-      .addField('Bot Latency:', `\`${latency}ms\``, true)
+      .addField('Bot Latency', `\`${latency}ms\``, true)
       .addField('API Latency', `\`${this.client.ws.ping}ms\``, true)
       .setColor('RANDOM')
       .setTimestamp();
