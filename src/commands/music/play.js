@@ -12,7 +12,7 @@ class PlayCommand extends Command {
       aliases: ['p'],
       usage: 'play <song name>',
       example: ['play never gonna give you up'],
-      cooldown: 3,
+      cooldown: 1,
       category: 'Music',
       clientPermissions: ['CONNECT', 'SPEAK'],
       inVoiceChannel: true,

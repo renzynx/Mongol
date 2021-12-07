@@ -8,7 +8,7 @@ module.exports = class ShuffleQueue extends Command {
       aliases: ['random'],
       usage: 'shuffle',
       example: ['shuffle'],
-      cooldown: 3,
+      cooldown: 1,
       category: 'Music',
       clientPermissions: ['CONNECT', 'SPEAK'],
       inVoiceChannel: true,

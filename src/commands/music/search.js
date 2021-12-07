@@ -10,7 +10,7 @@ class Search extends Command {
       description: 'Search music on youtube to play',
       usage: 'search <song name>',
       example: ['search never gonna give you up'],
-      cooldown: 3,
+      cooldown: 1,
       category: 'Music',
       inVoiceChannel: true,
     });
