@@ -23,6 +23,7 @@
     "erela.js-spotify": "^1.2.0",
     "glob": "^7.1.6",
     "moment": "^2.29.1",
-    "moment-duration-format": "^2.3.2"
+    "moment-duration-format": "^2.3.2",
+    "puppeteer": "^13.0.0"
   }
 }
