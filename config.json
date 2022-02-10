@@ -1,0 +1,8 @@
+{
+  "prefix": "?",
+  "token": "your token here",
+  "owners": ["your discord id here"],
+  "host": "lavalink host here",
+  "port": 443,
+  "password": "lavalink password here"
+}
