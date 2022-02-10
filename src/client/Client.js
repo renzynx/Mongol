@@ -4,7 +4,6 @@ const {
   registerCommands,
 } = require('../struct/registries/Registries.js');
 const { Manager } = require('erela.js');
-const Spotify = require('erela.js-spotify');
 const moment = require('moment');
 require('moment-duration-format');
 class BotClient extends Client {
@@ -32,14 +31,6 @@ class BotClient extends Client {
           port: config.port,
           password: config.password,
         },
-      ],
-      plugins: [
-        new Spotify({
-          clientID: config.clientID,
-          clientSecret: config.clientSecret,
-          playlistLimit: config.playlistLimit,
-          albumLimit: config.albumLimit,
-        }),
       ],
       send: (id, payload) => {
         const guild = this.guilds.cache.get(id);
